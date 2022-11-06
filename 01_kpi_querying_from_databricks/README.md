@@ -64,6 +64,16 @@ In this way, the KPI data being stored will never need to be re-queried just to 
 
 ---
 
+### Improvements to be made
+While I like the code base that I've written, I have also seen room for improvement. Below is a list of things I would do given the time to improve this code further.
+
+#### Separate code into multiple executions
+The code base separates KPIs into different files, but every function within these files is being called at some point during runtime. This presents a huge likelihood for failure. Since almost all of the KPIs are querying outside data and transforming it, there is a high probability that one of those KPI calls will fail, resulting in the entire script stopping and reporting an error.<br />
+However, there is no need to query all the KPIs during the same runtime. Since the durable data store with the KPI results is in a long format, we can write KPIs asynchronously without issue.<br />
+A better solution implementing this would specify user-defined data in a local config file rather than at the start of the script. Then, the "write_kpis" script would be broken into multiple different scripts (probably one each for Oracle, Github, and Databricks KPIs). These would be run at different times on the same day so that if any of these were to fail, the other KPIs would still be written without issue.
+
+---
+
 ## Summary
 This is a very short overview of what I did on this project, but it was complex and arguably needs to be shown in a format better than a README.
 If you have questions, please email me (see my GH account)- happy to talk more about it :)<br/>
