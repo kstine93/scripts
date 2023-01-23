@@ -1,0 +1,125 @@
+# swagger.yml
+
+openapi: 3.0.3
+info:
+  title: Deletion Request Service - OpenAPI 3.0
+  description: >
+    This API allows users to interact with a data deletion service. Users can add requests for the deletion of certain records,
+    see pending requests, approve or reject requests, and see requests that have already been processed.
+    This is designed to be part of a larger system which deletes data from several backend systems. This API is the user entrypoint.
+    This API developed using [these fantastic resources](https://realpython.com/flask-connexion-rest-api/).
+    Note: This [Swagger editor](https://editor.swagger.io/) lets you see this file rendered.
+  version: 0.1.0
+  contact:
+    name: Kevin Stine
+    email: kstine93@gmail.com
+
+#Note: This swagger API doc is of course for documentation, but it would be great as a planning document too
+#Let's plan out our endpoints here...
+paths:
+  /api/v1/requests/new:
+    #operationId == python function that will respond to request
+    #'requests' here is the module of the project and 'read_all' is the function
+    post:
+      summary: Add new to-be-processed requests to the queue
+      operationId: requests.new.add_requests #NOTE YET IMPLEMENTED
+      tags:
+      - requests
+      - add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: 'test1@gmail.com'
+                  cause:
+                    $ref: '#/components/schemas/causes'
+      responses:
+        "200":
+          description: All new requests successfully added
+        "400":
+          description: Could not parse one or more requests
+        "500":
+          description: Server error - please try again later
+  /api/v1/requests/pending:
+    get:
+      summary: Return the list of pending requests
+      operationId: requests.pending.read_all #NOT YET IMPLEMENTED
+      tags:
+        - requests
+        - get
+      responses:
+        "200":
+          description: Successfully returned pending requests
+        "500":
+          description: Server error - please try again later
+  /api/v1/requests/pending/{requestId}:
+    put:
+      summary: Modifies existing requests (for correcting errors or for approving/rejecting requests).
+      operationId: requests.pending.edit_requests #NOT YET IMPLEMENTED
+      tags:
+      - requests
+      - approve
+      - edit
+      parameters:
+        - name: requestId
+          in: path
+          description: ID of request that needs to be modified
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cause:
+                  $ref: '#/components/schemas/causes'
+                approve:
+                  type: boolean
+      responses:
+        "200":
+          description: All requests successfully edited
+        "400":
+          description: Could not edit one or more requests
+        "500":
+          description: Server error - please try again later
+  /api/v1/requests/finished:
+    post:
+      summary: Return list of finished where initial request date matches user-provided range
+      operationId: requests.finished.read_range
+      tags:
+      - requests
+      - finished
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startDate:
+                  type: string
+                endDate:
+                  type: string
+            
+
+      responses:
+        "200":
+          description: Successfully returned finished requests
+        "400":
+          description: Malformed request
+        "500":
+          description: Server error - please try again later
+          
+components:
+  schemas:
+    causes:
+      type: string
+      enum: ['direct_request','account_deleted','email_opt_out','inactive','other'] 
