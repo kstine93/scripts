@@ -10,14 +10,24 @@ from flask import Flask, render_template, request
 #If __name__ == __main__, this is the primary script. Else, it's a support script.
 app = Flask(__name__)
 
+base_url = '/api/v1'
+requests_url = base_url + '/requests'
 
 #---------
 #---NEW---
 #---------
-@app.route('api/v1/requests/new', methods=['POST'])
+@app.route(requests_url + '/new', methods=['POST'])
 def add_requests():
     data = request.json
-    return "data"
+    #Note: expects json like: [{"email":"test@email.de","cause":"direct_request"}{"email"...}]
+    #How to validate this in Flask? Look at express API I was working on with Jan?
+
+    #Next Steps:
+    #1. Implement database_connection class
+    #2. Create instance of database connection class here
+    #3. Store input in database (probably best to iterate over list here and provide JSON to class method)
+    #4. Find way to validate payload structure in Flask.
+    return data[0]['cause']
     #python3 -m flask run
     #Nav to http://localhost:5000/
     #Default port is 5000
@@ -25,18 +35,18 @@ def add_requests():
 #-------------
 #---PENDING---
 #-------------
-@app.route('api/v1/requests/pending', methods=['GET'])
+@app.route(requests_url + '/pending', methods=['GET'])
 def read_pending_requests():
     return render_template("index.html")
 
-@app.route('/api/v1/reqeusts/pending/<request_id>')
+@app.route(requests_url + '/pending/<request_id>')
 def edit_pending_requests(request_id):
     return f'{request_id}\'s profile'
 
 #--------------
 #---FINISHED---
 #--------------
-@app.route('api/v1/requests/pending', methods=['POST'])
+@app.route(requests_url + '/finished', methods=['POST'])
 def read_finished_requests():
     return "huhu!"
 

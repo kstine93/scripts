@@ -22,7 +22,7 @@ paths:
     #'requests' here is the module of the project and 'read_all' is the function
     post:
       summary: Add new to-be-processed requests to the queue
-      operationId: requests.new.add_requests #NOTE YET IMPLEMENTED
+      operationId: add_requests #NOTE YET IMPLEMENTED
       tags:
       - requests
       - add
@@ -49,7 +49,7 @@ paths:
   /api/v1/requests/pending:
     get:
       summary: Return the list of pending requests
-      operationId: requests.pending.read_all #NOT YET IMPLEMENTED
+      operationId: read_pending_requests #NOT YET IMPLEMENTED
       tags:
         - requests
         - get
@@ -61,7 +61,7 @@ paths:
   /api/v1/requests/pending/{requestId}:
     put:
       summary: Modifies existing requests (for correcting errors or for approving/rejecting requests).
-      operationId: requests.pending.edit_requests #NOT YET IMPLEMENTED
+      operationId: edit_pending_requests #NOT YET IMPLEMENTED
       tags:
       - requests
       - approve
@@ -94,7 +94,7 @@ paths:
   /api/v1/requests/finished:
     post:
       summary: Return list of finished where initial request date matches user-provided range
-      operationId: requests.finished.read_range
+      operationId: read_finished_requests
       tags:
       - requests
       - finished
