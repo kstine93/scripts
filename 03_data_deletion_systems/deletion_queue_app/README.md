@@ -91,7 +91,8 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
       - Date Added (date)
       - identifier (string)
       - input reason (string)
-      - approval_status (enum - 'pending', 'approved', 'rejected')
+      - rejected (boolean)
+        - Note: I don't think there is a need to show approval - all requests are approved by default - only explicit rejection is relevant.
     - finished requests:
       - < Same as pending >
       - Date processed (date)
