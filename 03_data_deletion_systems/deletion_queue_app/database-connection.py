@@ -14,8 +14,8 @@ class DatabaseConnection:
     def __init__(self):
         self.set_config()
         self.connect_to_db()
-        self.drop_tables()### ONLY FOR TESTING
-        self.create_tables()
+        #self.drop_tables()### ONLY FOR TESTING
+        #self.create_tables()### ONLY FOR TESTING - I would like this to assume db has been already set up
         self.add_new_by_email('test','test2')
         self.test_select()
 
@@ -25,7 +25,7 @@ class DatabaseConnection:
             SELECT * FROM {self.pending_table_name}
         ''')
         self.db_conn.commit()
-        print(self.db_cur.fetchone())
+        print(self.db_cur.fetchall())
     #----------------
     def set_config(self):
         config = configparser.ConfigParser()
@@ -101,5 +101,3 @@ class DatabaseConnection:
         #Return records filtered by date strings
         #How to enforce correct formatting (e.g., "2022-12-27")
         pass
-
-test = DatabaseConnection()

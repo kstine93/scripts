@@ -37,7 +37,7 @@ def add_requests():
 #-------------
 @app.route(requests_url + '/pending', methods=['GET'])
 def read_pending_requests():
-    return render_template("index.html")
+    return "Hello there!" #render_template("index.html")
 
 @app.route(requests_url + '/pending/<request_id>')
 def edit_pending_requests(request_id):
