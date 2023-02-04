@@ -29,11 +29,18 @@ def add_requests():
 #-------------
 @app.route(requests_url + '/pending', methods=['GET'])
 def read_pending_requests():
-    return "Hello there!" #render_template("index.html")
+    return db.get_pending(), 200
 
-@app.route(requests_url + '/pending/<request_id>')
-def edit_pending_requests(request_id):
-    return f'{request_id}\'s profile'
+@app.route(requests_url + '/pending/<id>', methods=['POST'])
+def edit_pending_requests(id):
+
+    print(request.json)
+    #If any data attached:
+    if request.data:
+        db.edit_pending_by_id(id,**request.json)
+        return f"Attributes changed for id {id}", 200
+    else:
+        return "Error: No attributes provided in JSON request body\n", 400
 
 #--------------
 #---FINISHED---

@@ -17,8 +17,8 @@ class DatabaseConnection:
         self.connect_to_db()
         # self.drop_tables()### ONLY FOR TESTING
         # self.create_tables()### ONLY FOR TESTING - I would prefer to keep all table setup in another structure.
-        self.add_new_by_email('test','test2')
-        self.test_select()
+        # self.add_new_by_email('test','test2')
+        # self.test_select()
 
     #----------------
     def test_select(self):
@@ -85,11 +85,11 @@ class DatabaseConnection:
         query = sql.SQL('''INSERT INTO {table}
             (email_address, request_cause) VALUES ({email},{cause})
         ''')
-
-        query.format(
-            table = sql.SQL(self.pending_table_name)
-            ,email = sql.SQL(email)
-            ,cause = sql.SQL(cause)
+        
+        query = query.format(
+            table = sql.Identifier(self.pending_table_name)
+            ,email = sql.Literal(email)
+            ,cause = sql.Literal(cause)
         )
         self.db_cur.execute(query)
         self.db_conn.commit()
@@ -100,6 +100,7 @@ class DatabaseConnection:
         #1. Read Kwargs
         #2. If user attempts to change any other fields, throw error
         excess_fields = set(fields.keys()) - set(self.mutable_pending_fields)
+        print(excess_fields)
         if (len(excess_fields) > 0):
             raise Exception("Cannot change the provided fields")
         else:
@@ -107,26 +108,35 @@ class DatabaseConnection:
                 table=self.pending_table_name
                 ,fields=fields
                 ,condition=f"WHERE id = {id}"
-                )
+            )
 
     #----------------
     # REQUIRES TESTING!!
     def update_table(self, table: str, fields: dict, condition: str):
         #generic method to update table based on provided key-value pairs and condition
         query = sql.SQL("UPDATE {table} SET {fields} {condition}").format(
-            table = sql.SQL(table)
+            table = sql.Identifier(table)
             ,fields = sql.SQL(', ').join(
                 sql.Composed([sql.Identifier(key), sql.SQL(" = "), sql.Placeholder(key)]) for key in fields.keys()
             )
-            ,condition = sql.SQL(condition)
+            ,condition = sql.Literal(condition)
         )
-        self.db_cur.execute(query)
+        self.db_cur.execute(query, fields)
         self.db_conn.commit()
+
+    #----------------
+    def get_pending(self):
+        #NEEDS TESTING! Standardize return data format (JSON)
+        query = sql.SQL("SELECT * FROM {table}")
+        query = query.format(table = sql.Identifier(self.pending_table_name))
+
+        self.db_cur.execute(query)
+        return self.db_cur.fetchall()
 
     #----------------
     def get_finished(self):
         #NEEDS TESTING! Standardize return data format (JSON)
-        query = "SELECT * FROM {table}"
+        query = sql.SQL("SELECT * FROM {table}")
         query = query.format(table = sql.Identifier(self.finished_table_name))
 
         self.db_cur.execute(query)
@@ -143,3 +153,6 @@ class DatabaseConnection:
 
         self.db_cur.execute(query)
         return self.db_cur.fetchall()
+
+db = DatabaseConnection()
+db.edit_pending_by_id(id='test_id',**{'rejocted':'True'})
