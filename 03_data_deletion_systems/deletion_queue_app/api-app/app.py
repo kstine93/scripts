@@ -37,8 +37,9 @@ def edit_pending_requests(id):
     print(request.json)
     #If any data attached:
     if request.data:
+        #TODO: Check data formats & structures
         db.edit_pending_by_id(id,**request.json)
-        return f"Attributes changed for id {id}", 200
+        return f"Attributes changed for id {id}\n", 200
     else:
         return "Error: No attributes provided in JSON request body\n", 400
 

@@ -100,26 +100,29 @@ class DatabaseConnection:
         #1. Read Kwargs
         #2. If user attempts to change any other fields, throw error
         excess_fields = set(fields.keys()) - set(self.mutable_pending_fields)
-        print(excess_fields)
+
         if (len(excess_fields) > 0):
             raise Exception("Cannot change the provided fields")
         else:
             self.update_table(
                 table=self.pending_table_name
                 ,fields=fields
-                ,condition=f"WHERE id = {id}"
+                ,cond_col = "id"
+                ,cond_val = id
             )
+            [print(x) for x in self.get_pending()] #TESTING!
 
     #----------------
     # REQUIRES TESTING!!
-    def update_table(self, table: str, fields: dict, condition: str):
+    def update_table(self, table: str, fields: dict, cond_col: str, cond_val: str):
         #generic method to update table based on provided key-value pairs and condition
-        query = sql.SQL("UPDATE {table} SET {fields} {condition}").format(
+        query = sql.SQL("UPDATE {table} SET {fields} WHERE {cond_col} = {cond_val}").format(
             table = sql.Identifier(table)
             ,fields = sql.SQL(', ').join(
                 sql.Composed([sql.Identifier(key), sql.SQL(" = "), sql.Placeholder(key)]) for key in fields.keys()
             )
-            ,condition = sql.Literal(condition)
+            ,cond_col = sql.Identifier(cond_col)
+            ,cond_val = sql.Literal(int(cond_val))
         )
         self.db_cur.execute(query, fields)
         self.db_conn.commit()
@@ -153,6 +156,3 @@ class DatabaseConnection:
 
         self.db_cur.execute(query)
         return self.db_cur.fetchall()
-
-db = DatabaseConnection()
-db.edit_pending_by_id(id='test_id',**{'rejocted':'True'})
