@@ -14,11 +14,11 @@ class DatabaseConnection:
     #----------------
     def __init__(self):
         self.set_config()
-        # self.connect_to_db()
+        self.connect_to_db()
         # self.drop_tables()### ONLY FOR TESTING
-        # self.create_tables()
-        # self.add_new_by_email('test','test2')
-        # self.test_select()
+        # self.create_tables()### ONLY FOR TESTING - I would prefer to keep all table setup in another structure.
+        self.add_new_by_email('test','test2')
+        self.test_select()
 
     #----------------
     def test_select(self):
@@ -26,7 +26,8 @@ class DatabaseConnection:
             SELECT * FROM {self.pending_table_name}
         ''')
         self.db_conn.commit()
-        print(self.db_cur.fetchone())
+        print(self.db_cur.fetchall())
+
     #----------------
     def set_config(self):
         config = configparser.ConfigParser()
