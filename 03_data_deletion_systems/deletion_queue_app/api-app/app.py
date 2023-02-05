@@ -3,6 +3,7 @@
 
 from flask import Flask, render_template, request
 from databaseConnection import DatabaseConnection
+from validation import *
 
 db = DatabaseConnection()
 

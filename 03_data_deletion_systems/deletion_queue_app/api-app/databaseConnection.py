@@ -7,14 +7,15 @@ class DatabaseConnection:
     db_conn = None
     db_cur = None
     config = None
-    pending_table_name = "pending_requests"
-    finished_table_name = "finished_requests"
-    mutable_pending_fields = ['request_cause','rejected']
+    pending_table_name = None
+    finished_table_name = None
+    mutable_pending_fields = None
 
     #----------------
     def __init__(self):
         self.set_config()
         self.connect_to_db()
+        self.set_data_specs()
         # self.drop_tables()### ONLY FOR TESTING
         # self.create_tables()### ONLY FOR TESTING - I would prefer to keep all table setup in another structure.
         # self.add_new_by_email('test','test2')
@@ -22,16 +23,14 @@ class DatabaseConnection:
 
     #----------------
     def test_select(self):
-        self.db_cur.execute(f'''
-            SELECT * FROM {self.pending_table_name}
-        ''')
+        self.db_cur.execute(f"SELECT * FROM {self.pending_table_name}")
         self.db_conn.commit()
         print(self.db_cur.fetchall())
 
     #----------------
     def set_config(self):
         config = configparser.ConfigParser()
-        config.read('deletion_app.cfg')
+        config.read('../deletion_app.cfg')
         self.config = config
 
     #----------------
@@ -41,15 +40,15 @@ class DatabaseConnection:
         self.db_cur = self.db_conn.cursor()
 
     #----------------
+    def set_data_specs(self):
+        self.pending_table_name = self.config['DATA_SPECS']['pending_table_name']
+        self.finished_table_name = self.config['DATA_SPECS']['finished_table_name']
+        self.mutable_pending_fields = self.config['DATA_SPECS']['mutable_pending_fields']
+
+    #----------------
     def drop_tables(self):
-        self.db_cur.execute(f'''
-            DROP TABLE IF EXISTS {self.pending_table_name}
-        ''')
-
-        self.db_cur.execute(f'''
-            DROP TABLE IF EXISTS {self.finished_table_name}
-        ''')
-
+        self.db_cur.execute(f"DROP TABLE IF EXISTS {self.pending_table_name}")
+        self.db_cur.execute(f"DROP TABLE IF EXISTS {self.finished_table_name}")
         self.db_conn.commit()
 
     #----------------
@@ -156,3 +155,6 @@ class DatabaseConnection:
 
         self.db_cur.execute(query)
         return self.db_cur.fetchall()
+
+
+db = DatabaseConnection()
