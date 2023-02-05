@@ -2,6 +2,7 @@
 import configparser
 import psycopg2
 from psycopg2 import sql
+from datetime import datetime
 
 class DatabaseConnection:
     db_conn = None
@@ -30,7 +31,7 @@ class DatabaseConnection:
     #----------------
     def set_config(self):
         config = configparser.ConfigParser()
-        config.read('../deletion_app.cfg')
+        config.read('deletion_app.cfg')
         self.config = config
 
     #----------------
@@ -145,16 +146,19 @@ class DatabaseConnection:
         return self.db_cur.fetchall()
 
     #----------------
-    def get_finished_by_date(self, startDate: str,endDate: str):
-        query = "SELECT * FROM {table} WHERE dt_processed BETWEEN {startDate} AND {endDate}"
+    def get_finished_by_date(self, startDate: str = "1970-01-01", endDate: str = datetime.now().strftime("%Y-%m-%d")):
+
+        query = sql.SQL("SELECT * FROM {table} WHERE dt_processed BETWEEN {startDate} AND {endDate}")
         query = query.format(
             table = sql.Identifier(self.finished_table_name)
-            ,startDate = sql.Identifier(startDate)
-            ,endDate = sql.Identifier(endDate)
+            ,startDate = sql.Literal(startDate)
+            ,endDate = sql.Literal(endDate)
             )
 
         self.db_cur.execute(query)
         return self.db_cur.fetchall()
 
 
-db = DatabaseConnection()
+# db = DatabaseConnection()
+# db.get_finished()
+# db.get_finished_by_date()

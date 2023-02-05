@@ -1,5 +1,12 @@
 #!bin/bash
 
+# Explanation:
+# This script sets up the necessary environment for the deletion_queue_app
+# As of Feb. 5, 2023, this includes (1) setting up a Docker instance of a Postgres database (for testing)
+# and (2) Creating Postgres database.
+# In the production version, we will need to set up or connect to a persistent remote database
+# (since running this on Kubernetes, easiest to rely on outside storage)
+
 #----------------------
 #---Common functions---
 #----------------------
@@ -35,4 +42,4 @@ echo "\n--- Closing API ---"
 #NOTE: This command does not get executed since exiting from Flask forwarding used in app.py aborts this entire script.
 #Once this is in production mode, need to find better way to ensure this entire script gets executed. -Kevin, Feb. 4, 2023
 echo "\n--- Stopping Docker Container ---"
-sudo docker-compose -f test_db_setup/docker-compose.yaml down
+#sudo docker-compose -f test_db_setup/docker-compose.yaml down

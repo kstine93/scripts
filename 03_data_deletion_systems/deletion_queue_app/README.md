@@ -61,16 +61,16 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
 #### a. Endpoint proof-of-concept
 - [X] Define the endpoints needed and what data is required from client (use Swagger doc as planning area)
 - [X] Define payload data structure for all endpoints
-- [ ] Implement in Flask
+- [X] Implement in Flask
 - [ ] Test endpoints
 
 #### b. Class setup
-- [ ] Define overall class structure(s) for the API
+- [X] Define overall class structure(s) for the API
   - Basic could be a simple 'database_connection' class that connects to persistent database and has abstracted methods for storing / retrieving data from it
   - We could also implement a class for handling / checking incoming payloads from endpoints
   - We could also implement an error class for better errors generally
-- [ ] Implement class definition(s)
-- [ ] Connect class(es) to API endpoints and to a **local database (JSON?) for testing**
+- [X] Implement class definition(s)
+- [X] Connect class(es) to API endpoints and to a **local database (JSON?) for testing**
 - [ ] Test endpoints
   - [ ] Test malformed payloads
 
@@ -136,3 +136,11 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
 - [ ] Test what happens when data is RE-FORWARDED (i.e., are duplicates handled correctly)
 
 ---
+
+## Dev Notes:
+
+> Feb. 5, 2023:
+> Finished working on testing 'get_finished_by_date' method in our database connection class
+> **Note:** Can no longer test database connection class as standalone script due to configparser using relative paths to load
+> config file - use `start_app.sh` instead.
+> Next step is to implement the marshmallow validation.py script so that I can check my incoming POST request bodies in app.py
