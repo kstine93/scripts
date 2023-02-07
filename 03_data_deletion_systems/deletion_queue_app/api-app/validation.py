@@ -29,15 +29,15 @@ class NewRequestSchema(Schema):
 
 #----------------
 class EditPendingSchema(Schema):
-    id = fields.Int(required=True)
-    cause = fields.Str(validate=validate.OneOf(
+    request_cause = fields.Str(validate=validate.OneOf(
         get_config_data_specs()['mutable_pending_fields']
     ))
+    rejected = fields.Str()
 
 #----------------
 class GetFinishedByDate(Schema):
-    startDate = fields.Date()
-    endDate = fields.Date()
+    startDate = fields.Date(format="%Y-%m-%d")
+    endDate = fields.Date(format="%Y-%m-%d")
 
 #---------------------
 #---Header Schemas:---

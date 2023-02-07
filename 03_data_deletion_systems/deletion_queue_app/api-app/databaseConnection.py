@@ -5,12 +5,12 @@ from psycopg2 import sql
 from datetime import datetime
 
 class DatabaseConnection:
-    db_conn = None
-    db_cur = None
-    config = None
-    pending_table_name = None
-    finished_table_name = None
-    mutable_pending_fields = None
+    db_conn: psycopg2.extensions.connection = None
+    db_cur: psycopg2.extensions.cursor = None
+    config: configparser.ConfigParser = None
+    pending_table_name: str = None
+    finished_table_name: str = None
+    mutable_pending_fields: list[str] = None
 
     #----------------
     def __init__(self):
@@ -44,7 +44,8 @@ class DatabaseConnection:
     def set_data_specs(self):
         self.pending_table_name = self.config['DATA_SPECS']['pending_table_name']
         self.finished_table_name = self.config['DATA_SPECS']['finished_table_name']
-        self.mutable_pending_fields = self.config['DATA_SPECS']['mutable_pending_fields']
+        #Configparser (apparently) cannot read lists. Expects string: value1,value2,value3
+        self.mutable_pending_fields = self.config['DATA_SPECS']['mutable_pending_fields'].split(",")
 
     #----------------
     def drop_tables(self):
@@ -96,13 +97,11 @@ class DatabaseConnection:
 
     #----------------
     def edit_pending_by_id(self, id: int, **fields):
-        #Requires ID to identify record, then iterate over kwargs to change values (only some values should be mutable)
-        #1. Read Kwargs
-        #2. If user attempts to change any other fields, throw error
-        excess_fields = set(fields.keys()) - set(self.mutable_pending_fields)
 
+        #If user attempts to change any other fields, throw error
+        excess_fields = set(fields.keys()) - set(self.mutable_pending_fields)
         if (len(excess_fields) > 0):
-            raise Exception("Cannot change the provided fields")
+            raise ValueError(f"Error: Cannot change the provided fields: {excess_fields}\n")
         else:
             self.update_table(
                 table=self.pending_table_name
@@ -110,10 +109,8 @@ class DatabaseConnection:
                 ,cond_col = "id"
                 ,cond_val = id
             )
-            [print(x) for x in self.get_pending()] #TESTING!
 
     #----------------
-    # REQUIRES TESTING!!
     def update_table(self, table: str, fields: dict, cond_col: str, cond_val: str):
         #generic method to update table based on provided key-value pairs and condition
         query = sql.SQL("UPDATE {table} SET {fields} WHERE {cond_col} = {cond_val}").format(
@@ -129,7 +126,6 @@ class DatabaseConnection:
 
     #----------------
     def get_pending(self):
-        #NEEDS TESTING! Standardize return data format (JSON)
         query = sql.SQL("SELECT * FROM {table}")
         query = query.format(table = sql.Identifier(self.pending_table_name))
 
@@ -138,7 +134,6 @@ class DatabaseConnection:
 
     #----------------
     def get_finished(self):
-        #NEEDS TESTING! Standardize return data format (JSON)
         query = sql.SQL("SELECT * FROM {table}")
         query = query.format(table = sql.Identifier(self.finished_table_name))
 
@@ -157,8 +152,3 @@ class DatabaseConnection:
 
         self.db_cur.execute(query)
         return self.db_cur.fetchall()
-
-
-# db = DatabaseConnection()
-# db.get_finished()
-# db.get_finished_by_date()

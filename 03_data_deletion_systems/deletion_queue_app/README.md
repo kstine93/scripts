@@ -62,7 +62,7 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
 - [X] Define the endpoints needed and what data is required from client (use Swagger doc as planning area)
 - [X] Define payload data structure for all endpoints
 - [X] Implement in Flask
-- [ ] Test endpoints
+- [X] Test endpoints
 
 #### b. Class setup
 - [X] Define overall class structure(s) for the API
@@ -99,7 +99,7 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
 - [ ] Test connections to database 
 
 #### b. Connect API to database
-- [ ] Edit API to use database instead of local storage
+- [ ] Edit API to use production database
 - [ ] Test API
   - [ ] Test adding, modifying, and removing from database
 
@@ -144,3 +144,13 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
 > **Note:** Can no longer test database connection class as standalone script due to configparser using relative paths to load
 > config file - use `start_app.sh` instead.
 > Next step is to implement the marshmallow validation.py script so that I can check my incoming POST request bodies in app.py
+
+---
+
+> Feb. 7, 2023:
+> Finished implementing validation for POST requests.
+> Next steps are:
+> 1. Doing more testing with malformed requests (try to break the system) - check out error codes returned
+> 2. Get postgres working on K8s
+> 3. Deploy api to K8s
+> 4. Integrate api on k8s with database on k8s
