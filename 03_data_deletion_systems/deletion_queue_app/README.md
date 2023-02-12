@@ -84,6 +84,8 @@ Requests will be stored in a neighboring Kafka instance within the same Kubernet
 
 #### a. Database setup
 - [ ] Create database in production environment
+  - [ ] Decide whether to use Postgres as persistent K8s volume or an external database
+    - Notes: It might be more nicely self-contained if I just used a persistent volume in K8s - an external database would require additional setup and wouldn't be as 'clean'. I also don't have experience with setting up persistent k8s volumes, so that would be nice practice.
 - [X] Define database schema:
   - I think we only need 2 tables: [pending requests] and [finished requests].
     - pending requests:
