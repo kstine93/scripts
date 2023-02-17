@@ -19,18 +19,14 @@ def get_config_data_specs():
 #-------------------
 class NewRequestSchema(Schema):
     email = fields.Str(required=True)
-    request_cause = fields.Str(required=True, validate=validate.OneOf([
-        'direct_request'
-        ,'account_deleted'
-        ,'email_opt_out'
-        ,'inactive'
-        ,'other'
-    ]))
+    request_cause = fields.Str(validate=validate.OneOf(
+        get_config_data_specs()['request_causes'].split(",")
+    ))
 
 #----------------
 class EditPendingSchema(Schema):
     request_cause = fields.Str(validate=validate.OneOf(
-        get_config_data_specs()['mutable_pending_fields']
+        get_config_data_specs()['request_causes'].split(",")
     ))
     rejected = fields.Str()
 

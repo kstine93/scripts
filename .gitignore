@@ -5,5 +5,5 @@
 03_data_deletion_systems/deletion_queue_app/_archive/typescript_deletion_service/fileDatabases
 
 #Deletion app with Python:
-projects/03_data_deletion_systems/deletion_queue_app/test_db_setup/postgres-data
+03_data_deletion_systems/deletion_queue_app/test_db_setup/postgres-data
 *__pycache__*

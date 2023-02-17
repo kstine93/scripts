@@ -23,12 +23,6 @@ class DatabaseConnection:
         # self.test_select()
 
     #----------------
-    def test_select(self):
-        self.db_cur.execute(f"SELECT * FROM {self.pending_table_name}")
-        self.db_conn.commit()
-        print(self.db_cur.fetchall())
-
-    #----------------
     def set_config(self):
         config = configparser.ConfigParser()
         config.read('deletion_app.cfg')
@@ -39,6 +33,10 @@ class DatabaseConnection:
         conn_string = "host={} dbname={} user={} password={}"
         self.db_conn = psycopg2.connect(conn_string.format(*self.config['DATABASE_ACCESS'].values()))
         self.db_cur = self.db_conn.cursor()
+
+    #----------------
+    def close_db_conn(self):
+        self.db_conn.close()
 
     #----------------
     def set_data_specs(self):
@@ -98,10 +96,13 @@ class DatabaseConnection:
     #----------------
     def edit_pending_by_id(self, id: int, **fields):
 
+        #If no fields provided to edit, raise error:
+        if len(fields) == 0:
+            raise ValueError("Error: No field provided to update.")
         #If user attempts to change any other fields, throw error
         excess_fields = set(fields.keys()) - set(self.mutable_pending_fields)
-        if (len(excess_fields) > 0):
-            raise ValueError(f"Error: Cannot change the provided fields: {excess_fields}\n")
+        if (len(excess_fields)) > 0:
+            raise ValueError(f"Error: Cannot change the provided fields: {list(excess_fields)}\n")
         else:
             self.update_table(
                 table=self.pending_table_name
@@ -113,7 +114,8 @@ class DatabaseConnection:
     #----------------
     def update_table(self, table: str, fields: dict, cond_col: str, cond_val: str):
         #generic method to update table based on provided key-value pairs and condition
-        query = sql.SQL("UPDATE {table} SET {fields} WHERE {cond_col} = {cond_val}").format(
+        #Note: Returning rows so that we can see if any matching ID was found:
+        query = sql.SQL("UPDATE {table} SET {fields} WHERE {cond_col} = {cond_val} RETURNING {cond_col}").format(
             table = sql.Identifier(table)
             ,fields = sql.SQL(', ').join(
                 sql.Composed([sql.Identifier(key), sql.SQL(" = "), sql.Placeholder(key)]) for key in fields.keys()
@@ -122,7 +124,14 @@ class DatabaseConnection:
             ,cond_val = sql.Literal(int(cond_val))
         )
         self.db_cur.execute(query, fields)
-        self.db_conn.commit()
+        
+        #If we found matching rows to update, commit changes. If no rows updated, rollback changes and raise error.
+        result = self.db_cur.fetchall()
+        if len(result) > 0:
+            self.db_conn.commit()
+        else:
+            self.db_conn.rollback()
+            raise ValueError("No matching rows found - update aborted.")
 
     #----------------
     def get_pending(self):
