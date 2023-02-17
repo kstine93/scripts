@@ -1,9 +1,0 @@
-#Archived TypeScript data deletion app:
-03_data_deletion_systems/deletion_queue_app/_archive/typescript_deletion_service/node_modules
-03_data_deletion_systems/deletion_queue_app/_archive/typescript_deletion_service/dist
-03_data_deletion_systems/deletion_queue_app/_archive/typescript_deletion_service/*.tsbuildinfo
-03_data_deletion_systems/deletion_queue_app/_archive/typescript_deletion_service/fileDatabases
-
-#Deletion app with Python:
-03_data_deletion_systems/deletion_queue_app/test_db_setup/postgres-data
-*__pycache__*
